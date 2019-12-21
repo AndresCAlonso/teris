@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
 import produce from 'immer'
 import {
+  clearLines,
+  dropPiece,
   invalidMove,
   generateRandomPiece,
   movePiece,
@@ -52,6 +54,8 @@ const stepState = ({
   setBoard,
   activePiece,
   setActivePiece,
+  nextPiece,
+  setNextPiece,
   setIsDropping,
 }) => {
   setIsDropping(true)
@@ -80,7 +84,8 @@ const stepState = ({
   )
 
   if (needNewPiece) {
-    currentPiece = generateRandomPiece()
+    currentPiece = nextPiece
+    setNextPiece(generateRandomPiece())
     nextPosition = movePieceDown(currentPiece.initialPlacement)
   }
 
@@ -100,14 +105,20 @@ const stepState = ({
     afterMoving.currentPosition = nextPosition
   })
 
+  if (needNewPiece) {
+    const [newBoard, linesDeleted] = clearLines(nextBoard)
+    setBoard(newBoard)
+  } else {
+    setBoard(nextBoard)
+  }
+
   setActivePiece(nextActive)
-  setBoard(nextBoard)
   setIsDropping(false)
 }
 
 const GameBoard = () => {
   const [board, setBoard] = useState(initializeBoard())
-  // const [nextPiece, setNextPiece] = useState(generateRandomPiece())
+  const [nextPiece, setNextPiece] = useState(generateRandomPiece())
   const [activePiece, setActivePiece] = useState(generateRandomPiece())
   const [lastKeypress, setLastKeypress] = useState(0)
   const [isDropping, setIsDropping] = useState(false)
@@ -119,8 +130,10 @@ const GameBoard = () => {
       activePiece,
       setActivePiece,
       setIsDropping,
+      nextPiece,
+      setNextPiece,
     })
-  }, 300)
+  }, 450)
 
   if (useKeyPress('ArrowRight')) {
     movePiece({
@@ -132,6 +145,19 @@ const GameBoard = () => {
       setLastKeypress,
       isDropping,
       direction: 'right',
+    })
+  }
+
+  if (useKeyPress('Space')) {
+    dropPiece({
+      board,
+      setBoard,
+      activePiece,
+      setActivePiece,
+      lastKeypress,
+      setLastKeypress,
+      nextPiece,
+      setNextPiece,
     })
   }
 
