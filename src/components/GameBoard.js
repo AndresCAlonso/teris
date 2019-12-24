@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useContext } from 'react'
 import produce from 'immer'
 import {
   clearLines,
@@ -9,6 +9,7 @@ import {
   useKeyPress,
   rotatePiece,
 } from '../utils/movements'
+import { StoreContext } from '../context/store'
 import { boardSettings, BLANK } from '../utils/settings'
 
 const initializeBoard = () => {
@@ -57,6 +58,7 @@ const stepState = ({
   nextPiece,
   setNextPiece,
   setIsDropping,
+  addToScore,
 }) => {
   setIsDropping(true)
   let currentPiece = activePiece
@@ -85,7 +87,7 @@ const stepState = ({
 
   if (needNewPiece) {
     currentPiece = nextPiece
-    setNextPiece(generateRandomPiece())
+    setNextPiece()
     nextPosition = movePieceDown(currentPiece.initialPlacement)
   }
 
@@ -108,6 +110,7 @@ const stepState = ({
   if (needNewPiece) {
     const [newBoard, linesDeleted] = clearLines(nextBoard)
     setBoard(newBoard)
+    addToScore(5 * 10 ** linesDeleted)
   } else {
     setBoard(nextBoard)
   }
@@ -118,10 +121,14 @@ const stepState = ({
 
 const GameBoard = () => {
   const [board, setBoard] = useState(initializeBoard())
-  const [nextPiece, setNextPiece] = useState(generateRandomPiece())
   const [activePiece, setActivePiece] = useState(generateRandomPiece())
   const [lastKeypress, setLastKeypress] = useState(0)
   const [isDropping, setIsDropping] = useState(false)
+
+  const { state, dispatch } = useContext(StoreContext)
+  const { nextPiece, score } = state
+  const setNextPiece = () => dispatch({ type: 'SET_NEXT_PIECE' })
+  const addToScore = toAdd => dispatch({ type: 'ADD_TO_SCORE', payload: toAdd })
 
   useInterval(() => {
     stepState({
@@ -132,6 +139,7 @@ const GameBoard = () => {
       setIsDropping,
       nextPiece,
       setNextPiece,
+      addToScore,
     })
   }, 450)
 
@@ -158,6 +166,7 @@ const GameBoard = () => {
       setLastKeypress,
       nextPiece,
       setNextPiece,
+      addToScore,
     })
   }
 

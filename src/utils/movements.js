@@ -72,6 +72,8 @@ const movePiece = ({
 
   const addToColumn = direction === 'left' ? -1 : 1
 
+  if (!pieceCoordinates) return
+
   const nextPosition = Object.fromEntries(
     Object.entries(pieceCoordinates).map(([key, [row, column]]) => [
       key,
@@ -159,6 +161,7 @@ const dropPiece = ({
   setLastKeypress,
   nextPiece,
   setNextPiece,
+  addToScore,
 }) => {
   let currentPiece = activePiece
   let pieceCoordinates =
@@ -212,7 +215,7 @@ const dropPiece = ({
 
     Object.values(newActivePiece.initialPlacement).forEach(([row, column]) => {
       if (row >= 0) {
-        newBoard[row][column] = nextPiece
+        newBoard[row][column] = newActivePiece
       }
     })
   })
@@ -222,6 +225,9 @@ const dropPiece = ({
   setActivePiece(newActivePiece)
   setNextPiece(generateRandomPiece())
   setBoard(newBoard)
+  if (linesDeleted > 0) {
+    addToScore(5 * 10 ** linesDeleted)
+  }
 }
 
 const rotatePiece = ({

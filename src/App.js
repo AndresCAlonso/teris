@@ -1,10 +1,10 @@
-import React from "react"
-import GameBoard from "./components/GameBoard"
+import React from 'react'
+import GameLayout from './components/GameLayout'
 
 function App() {
   return (
     <div className="App">
-      <GameBoard />
+      <GameLayout />
     </div>
   )
 }

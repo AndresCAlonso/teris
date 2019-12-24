@@ -9,6 +9,7 @@ const boardSettings = {
 const pieces = {
   SQUARE: {
     color: '#F0F000',
+    type: 'SQUARE',
     initialPlacement: {
       a: [-1, 4],
       b: [-1, 5],
@@ -20,6 +21,7 @@ const pieces = {
   },
   RIGHT_L: {
     color: '#EF9F00',
+    type: 'RIGHT_L',
     initialPlacement: {
       a: [-1, 6],
       b: [0, 4],
@@ -67,6 +69,7 @@ const pieces = {
   },
   LEFT_L: {
     color: '#0000F0',
+    type: 'LEFT_L',
     initialPlacement: {
       a: [-1, 4],
       b: [0, 4],
@@ -110,6 +113,7 @@ const pieces = {
   },
   LINE: {
     color: '#00F0F0',
+    type: 'LINE',
     initialPlacement: {
       a: [-1, 4],
       b: [-1, 5],
@@ -143,6 +147,7 @@ const pieces = {
   },
   Z: {
     color: '#007800',
+    type: 'Z',
     initialPlacement: {
       a: [-1, 5],
       b: [-1, 6],
@@ -176,6 +181,7 @@ const pieces = {
   },
   REV_Z: {
     color: '#780000',
+    type: 'REV_Z',
     initialPlacement: {
       a: [-1, 4],
       b: [-1, 5],
@@ -209,6 +215,7 @@ const pieces = {
   },
   T: {
     color: '#A000F0',
+    type: 'T',
     initialPlacement: {
       a: [-1, 5],
       b: [0, 4],
