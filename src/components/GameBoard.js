@@ -7,7 +7,7 @@ import {
   generateRandomPiece,
   movePiece,
   useKeyPress,
-  rotatePiece,
+  rotatePiece
 } from '../utils/movements'
 import { StoreContext } from '../context/store'
 import { boardSettings, BLANK } from '../utils/settings'
@@ -19,15 +19,13 @@ const initializeBoard = () => {
   return Array(rows).fill(Array(columns).fill(BLANK))
 }
 
-const Cell = ({ cellValue, row, column }) => {
-  return (
-    <div
-      style={{
-        border: '1px solid gray',
-        backgroundColor: cellValue.color,
-      }}
-    ></div>
-  )
+const Cell = ({ cellValue, row, column, cellStyles }) => {
+  const stylesToUse = cellStyles || {
+    border: '1px solid gray',
+    backgroundColor: cellValue.color
+  }
+
+  return <div style={stylesToUse}></div>
 }
 
 const useInterval = (callback, delay) => {
@@ -51,6 +49,7 @@ const useInterval = (callback, delay) => {
 }
 
 const stepState = ({
+  isPaused,
   board,
   setBoard,
   activePiece,
@@ -58,8 +57,10 @@ const stepState = ({
   nextPiece,
   setNextPiece,
   setIsDropping,
-  addToScore,
+  addToScore
 }) => {
+  if (isPaused) return
+
   setIsDropping(true)
   let currentPiece = activePiece
 
@@ -68,7 +69,7 @@ const stepState = ({
       Object.entries(pieceCoordinates).map(([key, value]) => {
         const [row, column] = value
         return [key, [row + 1, column]]
-      }),
+      })
     )
   }
 
@@ -81,8 +82,8 @@ const stepState = ({
     invalidMove({
       board,
       moveCoordinates,
-      allPieceCoordinates: Object.values(pieceCoordinates),
-    }),
+      allPieceCoordinates: Object.values(pieceCoordinates)
+    })
   )
 
   if (needNewPiece) {
@@ -126,12 +127,13 @@ const GameBoard = () => {
   const [isDropping, setIsDropping] = useState(false)
 
   const { state, dispatch } = useContext(StoreContext)
-  const { nextPiece, score } = state
+  const { nextPiece, isPaused } = state
   const setNextPiece = () => dispatch({ type: 'SET_NEXT_PIECE' })
   const addToScore = toAdd => dispatch({ type: 'ADD_TO_SCORE', payload: toAdd })
 
   useInterval(() => {
     stepState({
+      isPaused,
       board,
       setBoard,
       activePiece,
@@ -139,7 +141,7 @@ const GameBoard = () => {
       setIsDropping,
       nextPiece,
       setNextPiece,
-      addToScore,
+      addToScore
     })
   }, 450)
 
@@ -152,7 +154,7 @@ const GameBoard = () => {
       lastKeypress,
       setLastKeypress,
       isDropping,
-      direction: 'right',
+      direction: 'right'
     })
   }
 
@@ -166,7 +168,7 @@ const GameBoard = () => {
       setLastKeypress,
       nextPiece,
       setNextPiece,
-      addToScore,
+      addToScore
     })
   }
 
@@ -178,7 +180,7 @@ const GameBoard = () => {
       setActivePiece,
       lastKeypress,
       setLastKeypress,
-      isDropping,
+      isDropping
     })
   }
 
@@ -191,7 +193,7 @@ const GameBoard = () => {
       lastKeypress,
       setLastKeypress,
       isDropping,
-      direction: 'left',
+      direction: 'left'
     })
   }
 
@@ -205,13 +207,13 @@ const GameBoard = () => {
         gridTemplateRows: `repeat(${boardSettings.displayedRows}, 1fr)`,
         width: `${boardSettings.columns * boardSettings.cellWidth}px`,
         height: `${boardSettings.displayedRows * boardSettings.cellHeight}px`,
-        border: '1px solid gray',
+        border: '1px solid gray'
       }}
     >
       {board
         .filter(
           (_, rowIndex) =>
-            rowIndex >= boardSettings.rows - boardSettings.displayedRows,
+            rowIndex >= boardSettings.rows - boardSettings.displayedRows
         )
         .map((row, rowIndex) => {
           return row.map((cellVal, cellIndex) => (
@@ -227,4 +229,4 @@ const GameBoard = () => {
   )
 }
 
-export default GameBoard
+export { GameBoard, Cell }

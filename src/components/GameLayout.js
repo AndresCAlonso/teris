@@ -1,11 +1,15 @@
 import React from 'react'
-import GameBoard from './GameBoard'
+import { GameBoard } from './GameBoard'
 import GameInfoPanel from './GameInfoPanel'
 import { StoreProvider } from '../context/store'
 
 const layoutStyles = {
-  width: '960px',
+  width: '500px',
   margin: '0 auto',
+  display: 'grid',
+  gridTemplateColumns: '4fr 2fr',
+  gridTemplateRows: 'auto',
+  justifyContent: 'space-around'
 }
 
 const GameLayout = () => {
