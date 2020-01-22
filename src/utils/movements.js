@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { boardSettings, pieces, BLANK } from './settings'
 import produce from 'immer'
-import debounce from 'lodash/debounce'
+
+const DEBOUNCE_DELAY = 150
 
 const invalidMove = ({ board, moveCoordinates, allPieceCoordinates }) => {
   const [row, column] = moveCoordinates
@@ -28,19 +29,20 @@ const useKeyPress = targetKey => {
   const match = event => targetKey === event.code
 
   // If pressed key is our target key then set to true
-  const downHandler = debounce(event => {
-    // console.log(event.code)
+  const downHandler = event => {
+    event.preventDefault()
     if (match(event)) {
       setKeyPressed(true)
     }
-  })
+  }
 
   // If released key is our target key then set to false
-  const upHandler = debounce(event => {
+  const upHandler = event => {
+    event.preventDefault()
     if (match(event)) {
       setKeyPressed(false)
     }
-  })
+  }
 
   // Add event listeners
   useEffect(() => {
@@ -51,7 +53,7 @@ const useKeyPress = targetKey => {
       window.removeEventListener('keydown', downHandler)
       window.removeEventListener('keyup', upHandler)
     }
-  }, []) // Empty array ensures that effect is only run on mount and unmount
+  }) // Empty array ensures that effect is only run on mount and unmount
 
   return keyPressed
 }
@@ -90,7 +92,7 @@ const movePiece = ({
         allPieceCoordinates: Object.values(pieceCoordinates),
       }),
     ) &&
-    Date.now() - lastKeypress >= 100
+    Date.now() - lastKeypress >= DEBOUNCE_DELAY
   ) {
     setLastKeypress(Date.now())
     const nextBoard = produce(board, newBoard => {
@@ -136,12 +138,10 @@ const clearLines = board => {
     let currentRow = board[startingRow]
 
     const nextBoard = produce(board, newBoard => {
-      while (!currentRow.every(cellValue => cellValue === BLANK)) {
-        currentRow.forEach((cellValue, columnIndex) => {
-          newBoard[currentRowIndex][columnIndex] = BLANK
-          newBoard[currentRowIndex + rowsToDelete][columnIndex] = cellValue
-        })
-        --currentRowIndex
+      while (currentRowIndex >=0 && !currentRow.every(cellValue => cellValue === BLANK)) {
+        newBoard[currentRowIndex] = currentRow.slice(0).fill(BLANK)
+        newBoard[currentRowIndex + rowsToDelete] = currentRow.slice(0)
+        currentRowIndex -= 1
         currentRow = board[currentRowIndex]
       }
     })
@@ -178,7 +178,7 @@ const dropPiece = ({
   let currentPosition = pieceCoordinates
   let nextPosition = getNextDropPosition(pieceCoordinates)
 
-  if (Date.now() - lastKeypress < 150) {
+  if (Date.now() - lastKeypress < DEBOUNCE_DELAY) {
     return
   }
 
@@ -257,7 +257,7 @@ const rotatePiece = ({
         allPieceCoordinates: Object.values(pieceCoordinates),
       }),
     ) &&
-    Date.now() - lastKeypress >= 100
+    Date.now() - lastKeypress >= DEBOUNCE_DELAY
   ) {
     setLastKeypress(Date.now())
     const nextBoard = produce(board, newBoard => {

@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import { StoreContext } from '../context/store'
-import { pieces, BLANK } from '../utils/settings'
+import { BLANK } from '../utils/settings'
 import { Cell } from './GameBoard'
 import { produce } from 'immer'
 
@@ -76,7 +76,10 @@ const GameInfoPanel = () => {
       <div>{score}</div>
       <div style={{ margin: '1em' }}>
         <button
-          onClick={() => togglePause()}
+          onClick={(e) => {
+            e.preventDefault()
+            togglePause()
+          }}
           style={{
             backgroundColor: '#4CAF50' /* Green */,
             border: 'none',
